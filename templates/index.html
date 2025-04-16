@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RD Events FM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1A5CC1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* YOUR ORIGINAL CSS - COMPLETELY UNCHANGED */
+        :root {
+            --blue: #1A5CC1;
+            --white: #FFFFFF;
+            --green: #66BB6A;
+            --light-green: #81C784;
+            --dark-green: #4CAF50;
+            --nav-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--blue);
+            color: var(--white);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Home Page */
+        .station-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 400px;
+            margin: 0 auto 25px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .album-art {
+            width: 100%;
+            max-width: 220px;
+            aspect-ratio: 1/1;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .song-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .song-artist {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Equalizer Animation */
+        .equalizer {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 40px;
+            gap: 3px;
+            margin: 20px 0;
+        }
+
+        .equalizer-bar {
+            width: 4px;
+            background: var(--light-green);
+            border-radius: 3px;
+            animation: equalize 1.5s infinite ease-in-out;
+        }
+
+        .equalizer-bar:nth-child(1) { height: 20%; animation-delay: 0.1s; }
+        .equalizer-bar:nth-child(2) { height: 50%; animation-delay: 0.3s; }
+        .equalizer-bar:nth-child(3) { height: 30%; animation-delay: 0.5s; }
+        .equalizer-bar:nth-child(4) { height: 70%; animation-delay: 0.2s; }
+        .equalizer-bar:nth-child(5) { height: 40%; animation-delay: 0.4s; }
+
+        @keyframes equalize {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        /* Play Button */
+        #playButton {
+            background: var(--light-green);
+            color: var(--white);
+            border: none;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            font-weight: 700;
+            width: 100%;
+            max-width: 220px;
+            margin: 0 auto;
+            display: block;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(129, 199, 132, 0.3);
+        }
+
+        #playButton.playing {
+            background: var(--dark-green);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        #playButton:active {
+            transform: scale(0.98);
+        }
+
+        /* News Page */
+        .news-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .post {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--white);
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .post-content a {
+            color: var(--light-green);
+            word-break: break-all;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        /* Developer Panel */
+        .dev-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .dev-form {
+            margin-bottom: 20px;
+        }
+
+        .dev-input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .dev-button {
+            background: var(--light-green);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dev-button:hover {
+            background: var(--green);
+        }
+
+        .dev-button.delete {
+            background: #EF5350;
+        }
+
+        .dev-button.delete:hover {
+            background: #E53935;
+        }
+
+        .post-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--light-green);
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+            transition: transform 0.2s;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: translateY(-3px);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Home Page -->
+    <div class="page active" id="homePage">
+        <h1 class="station-name">RD EVENTS</h1>
+        <div class="player-card">
+            <img id="albumArt" class="album-art" src="https://via.placeholder.com/400?text=No+Cover" alt="Album Art">
+            <h2 id="songTitle" class="song-title">Loading...</h2>
+            <p id="songArtist" class="song-artist"></p>
+            <div class="equalizer" id="equalizer" style="display: none;">
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+                <div class="equalizer-bar"></div>
+            </div>
+        </div>
+        <button id="playButton">
+            <i class="fas fa-play" id="playIcon"></i>
+            <span id="playText">PLAY LIVE</span>
+        </button>
+    </div>
+
+    <!-- News Page -->
+    <div class="page" id="newsPage">
+        <div class="news-container">
+            <h2 class="station-name">RD NEWS</h2>
+            <div id="newsPosts"></div>
+
+            <!-- Developer Panel (Hidden by default) -->
+            <div id="devPanel" style="display: none;">
+                <div class="dev-panel">
+                    <h3 style="margin-bottom: 15px; color: var(--light-green);">
+                        <i class="fas fa-lock-open"></i> Developer Mode
+                    </h3>
+
+                    <div class="dev-form" id="addForm">
+                        <input type="text" id="postTitle" class="dev-input" placeholder="Title">
+                        <textarea id="postContent" class="dev-input" placeholder="Content (URLs auto-link)"></textarea>
+                        <input type="text" id="postImage" class="dev-input" placeholder="Image URL (optional)">
+                        <button id="submitPost" class="dev-button">
+                            <i class="fas fa-plus"></i> ADD POST
+                        </button>
+                    </div>
+
+                    <div class="dev-form" id="editForm" style="display: none;">
+                        <input type="hidden" id="editPostId">
+                        <input type="text" id="editPostTitle" class="dev-input" placeholder="Title">
+                        <textarea id="editPostContent" class="dev-input" placeholder="Content"></textarea>
+                        <input type="text" id="editPostImage" class="dev-input" placeholder="Image URL">
+                        <div class="post-controls">
+                            <button id="updatePost" class="dev-button">
+                                <i class="fas fa-save"></i> UPDATE
+                            </button>
+                            <button id="cancelEdit" class="dev-button" style="background: #78909C;">
+                                <i class="fas fa-times"></i> CANCEL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Developer Login -->
+            <div id="devLogin" style="text-align: center; margin-top: 20px;">
+                <button id="devModeBtn" style="
+                    background: transparent; 
+                    border: none; 
+                    color: var(--light-green); 
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    margin: 0 auto;
+                ">
+                    <i class="fas fa-lock"></i> Developer Mode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="page" id="settingsPage">
+        <div style="max-width: 500px; margin: 0 auto; padding: 20px;">
+            <h2 class="station-name">SETTINGS</h2>
+            <p style="text-align: center; margin-top: 20px;">Settings options coming soon</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <a href="#" class="nav-item active" data-page="homePage">
+            <i class="fas fa-home nav-icon"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" data-page="newsPage">
+            <i class="fas fa-newspaper nav-icon"></i>
+            <span>News</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settingsPage">
+            <i class="fas fa-cog nav-icon"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        // Elements
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const player = document.getElementById('audioPlayer');
+        const playButton = document.getElementById('playButton');
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+        const songTitle = document.getElementById('songTitle');
+        const songArtist = document.getElementById('songArtist');
+        const albumArt = document.getElementById('albumArt');
+        const equalizer = document.getElementById('equalizer');
+        const newsPosts = document.getElementById('newsPosts');
+        const devPanel = document.getElementById('devPanel');
+        const devLogin = document.getElementById('devLogin');
+        const devModeBtn = document.getElementById('devModeBtn');
+        const postTitle = document.getElementById('postTitle');
+        const postContent = document.getElementById('postContent');
+        const postImage = document.getElementById('postImage');
+        const submitPost = document.getElementById('submitPost');
+        const editForm = document.getElementById('editForm');
+        const editPostId = document.getElementById('editPostId');
+        const editPostTitle = document.getElementById('editPostTitle');
+        const editPostContent = document.getElementById('editPostContent');
+        const editPostImage = document.getElementById('editPostImage');
+        const updatePost = document.getElementById('updatePost');
+        const cancelEdit = document.getElementById('cancelEdit');
+        const toast = document.getElementById('toast');
+
+        // URLs
+        const API_URL = "https://panel.radiocast.net/api/nowplaying/10";
+        const STREAM_URL = "https://panel.radiocast.net/listen/rd_events_fm/radio.mp3";
+        const DEV_PASSWORD = "RDbird1585"; // Added password constant
+
+        // Show toast message
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+
+        // Auto-link URLs in text
+        function linkify(text) {
+            if (!text) return '';
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, url => {
+                return `<a href="${url}" target="_blank">${url}</a>`;
+            });
+        }
+
+        // Format time (Now, 1m ago, 1h ago, etc.)
+        function formatTime(timestamp) {
+            const now = new Date();
+            const postTime = new Date(timestamp);
+            const diff = now - postTime;
+
+            const seconds = Math.floor(diff / 1000);
+            if (seconds < 60) return "Now";
+
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+
+        // Media Session API for lock screen controls
+        function updateMediaSession(title, artist, artwork) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: title,
+                    artist: artist,
+                    artwork: [
+                        { src: artwork || 'https://via.placeholder.com/96', sizes: '96x96', type: 'image/png' },
+                        { src: artwork || 'https://via.placeholder.com/128', sizes: '128x128', type: 'image/png' },
+                        { src: artwork || 'https://via.placeholder.com/192', sizes: '192x192', type: 'image/png' },
+                        { src: artwork || 'https://via.placeholder.com/256', sizes: '256x256', type: 'image/png' },
+                        { src: artwork || 'https://via.placeholder.com/384', sizes: '384x384', type: 'image/png' },
+                        { src: artwork || 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', () => {
+                    player.play();
+                    playIcon.className = "fas fa-stop";
+                    playText.textContent = "STOP";
+                    playButton.classList.add('playing');
+                    equalizer.style.display = 'flex';
+                });
+
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    player.pause();
+                    playIcon.className = "fas fa-play";
+                    playText.textContent = "PLAY LIVE";
+                    playButton.classList.remove('playing');
+                    equalizer.style.display = 'none';
+                });
+            }
+        }
+
+        // Load news posts
+        async function loadNews() {
+            try {
+                const response = await fetch('/get_posts');
+                const posts = await response.json();
+
+                newsPosts.innerHTML = '';
+                posts.forEach(post => {
+                    const postEl = document.createElement('div');
+                    postEl.className = 'post';
+                    postEl.innerHTML = `
+                        <div class="post-title">${post.title}</div>
+                        ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
+                        <div class="post-content">${linkify(post.content)}</div>
+                        <div class="post-time">${formatTime(post.timestamp)}</div>
+                        ${devPanel.style.display === 'block' ? `
+                        <div class="post-controls" data-post-id="${post.id}">
+                            <button class="dev-button edit-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="dev-button delete delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                        ` : ''}
+                    `;
+                    newsPosts.appendChild(postEl);
+                });
+
+                // Add event listeners to edit/delete buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const postId = e.target.closest('.post-controls').getAttribute('data-post-id');
+                        editPost(postId);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const postId = e.target.closest('.post-controls').getAttribute('data-post-id');
+                        deletePost(postId);
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error loading news:", error);
+            }
+        }
+
+        // Edit post
+        async function editPost(postId) {
+            try {
+                const response = await fetch('/get_posts');
+                const posts = await response.json();
+                const post = posts.find(p => p.id === postId);
+
+                if (post) {
+                    editPostId.value = postId;
+                    editPostTitle.value = post.title;
+                    editPostContent.value = post.content;
+                    editPostImage.value = post.image || '';
+                    document.getElementById('addForm').style.display = 'none';
+                    editForm.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error loading post:", error);
+                showToast("Error loading post");
+            }
+        }
+
+        // Delete post
+        async function deletePost(postId) {
+            if (!confirm("Are you sure you want to delete this post?")) return;
+
+            try {
+                const response = await fetch(`/delete_post/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Dev-Auth': DEV_PASSWORD
+                    }
+                });
+
+                if (response.ok) {
+                    showToast("Post deleted");
+                    loadNews();
+                }
+            } catch (error) {
+                console.error("Error deleting post:", error);
+                showToast("Error deleting post");
+            }
+        }
+
+        // Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = item.getAttribute('data-page');
+
+                pages.forEach(page => page.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                if (pageId === 'newsPage') loadNews();
+            });
+        });
+
+        // Developer mode
+        devModeBtn.addEventListener('click', () => {
+            const password = prompt("Enter developer password:");
+            if (password === DEV_PASSWORD) {
+                devPanel.style.display = 'block';
+                devLogin.style.display = 'none';
+                showToast("Developer mode activated");
+                loadNews();
+            } else {
+                showToast("Incorrect password", 2000);
+            }
+        });
+
+        // Submit new post
+        submitPost.addEventListener('click', async () => {
+            if (!postTitle.value.trim()) return showToast("Title is required!");
+
+            try {
+                const response = await fetch('/add_post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Dev-Auth': DEV_PASSWORD
+                    },
+                    body: JSON.stringify({
+                        title: postTitle.value,
+                        content: postContent.value,
+                        image: postImage.value
+                    })
+                });
+
+                if (response.ok) {
+                    postTitle.value = '';
+                    postContent.value = '';
+                    postImage.value = '';
+                    showToast("Post added");
+                    loadNews();
+                }
+            } catch (error) {
+                console.error("Error submitting post:", error);
+                showToast("Error adding post");
+            }
+        });
+
+        // Update post
+        updatePost.addEventListener('click', async () => {
+            if (!editPostTitle.value.trim()) return showToast("Title is required!");
+
+            try {
+                const response = await fetch(`/update_post/${editPostId.value}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Dev-Auth': DEV_PASSWORD
+                    },
+                    body: JSON.stringify({
+                        title: editPostTitle.value,
+                        content: editPostContent.value,
+                        image: editPostImage.value
+                    })
+                });
+
+                if (response.ok) {
+                    editPostTitle.value = '';
+                    editPostContent.value = '';
+                    editPostImage.value = '';
+                    editPostId.value = '';
+                    editForm.style.display = 'none';
+                    document.getElementById('addForm').style.display = 'block';
+                    showToast("Post updated");
+                    loadNews();
+                }
+            } catch (error) {
+                console.error("Error updating post:", error);
+                showToast("Error updating post");
+            }
+        });
+
+        // Cancel edit
+        cancelEdit.addEventListener('click', () => {
+            editPostTitle.value = '';
+            editPostContent.value = '';
+            editPostImage.value = '';
+            editPostId.value = '';
+            editForm.style.display = 'none';
+            document.getElementById('addForm').style.display = 'block';
+        });
+
+        // Player functions
+        function cleanTitle(title) {
+            return title.replace(/^.*? - /, '').trim();
+        }
+
+        function togglePlayback() {
+            if (player.paused) {
+                player.src = STREAM_URL;
+                player.play()
+                    .then(() => {
+                        playIcon.className = "fas fa-stop";
+                        playText.textContent = "STOP";
+                        playButton.classList.add('playing');
+                        equalizer.style.display = 'flex';
+                        updateMediaSession(
+                            songTitle.textContent,
+                            songArtist.textContent,
+                            albumArt.src
+                        );
+                    })
+                    .catch(e => {
+                        console.error("Play error:", e);
+                        showToast("Tap again to play");
+                    });
+            } else {
+                player.pause();
+                playIcon.className = "fas fa-play";
+                playText.textContent = "PLAY LIVE";
+                playButton.classList.remove('playing');
+                equalizer.style.display = 'none';
+            }
+        }
+
+        async function updateSong() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                const song = data?.now_playing?.song;
+
+                const title = cleanTitle(song?.text || "RD Events FM");
+                const artist = song?.artist || "";
+                const art = song?.art || "https://via.placeholder.com/400?text=No+Cover";
+
+                songTitle.textContent = title;
+                songArtist.textContent = artist;
+                albumArt.src = art;
+
+                // Update lock screen if playing
+                if (!player.paused) {
+                    updateMediaSession(title, artist, art);
+                }
+
+            } catch (error) {
+                console.error("Update error:", error);
+                songTitle.textContent = "RD Events FM";
+                songArtist.textContent = "";
+            }
+        }
+
+        // Event listeners
+        playButton.addEventListener('click', togglePlayback);
+
+        // Initial load
+        updateSong();
+        setInterval(updateSong, 10000);
+        setInterval(loadNews, 5000); // Refresh posts every 5 seconds
+    </script>
+</body>
+</html>
