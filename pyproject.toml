@@ -1,11 +1,15 @@
 [tool.poetry]
 name = "python-template"
 version = "0.1.0"
-description = ""
+description = "A basic Flask project with CORS and requests support"
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 
 [tool.poetry.dependencies]
-flask-cors = ">=5.0.1"
 flask = ">=3.1.0"
+flask-cors = ">=5.0.1"
 requests = ">=2.32.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
