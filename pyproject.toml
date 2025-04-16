@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "python-template"
 version = "0.1.0"
-description = "A basic Flask project with CORS and requests support"
+description = "A Python Flask template project"
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 
