@@ -1,11 +1,11 @@
-[project]
+[tool.poetry]
 name = "python-template"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
-dependencies = [
-    "flask-cors>=5.0.1",
-    "flask>=3.1.0",
-    "requests>=2.32.3",
-]
+
+[tool.poetry.dependencies]
+flask-cors = ">=5.0.1"
+flask = ">=3.1.0"
+requests = ">=2.32.3"
