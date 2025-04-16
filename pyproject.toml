@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "python-template"
+name = "rdeventsfm"
 version = "0.1.0"
-description = "A Python Flask template project"
-authors = ["Your Name <you@example.com>"]
-requires-python = ">=3.11"
+description = "RD Events FM site"
+authors = ["kiwisz <you@example.com>"]
 
 [tool.poetry.dependencies]
-flask = ">=3.1.0"
-flask-cors = ">=5.0.1"
-requests = ">=2.32.3"
+python = ">=3.10"
+flask = "^2.3.3"
+requests = "^2.31.0"  # optional, if you're using requests
+# Add any other dependencies here
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
