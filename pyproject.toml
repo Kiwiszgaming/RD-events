@@ -7,8 +7,7 @@ authors = ["kiwisz <you@example.com>"]
 [tool.poetry.dependencies]
 python = ">=3.10"
 flask = "^2.3.3"
-requests = "^2.31.0"  # optional, if you're using requests
-# Add any other dependencies here
+flask-cors = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core"]
